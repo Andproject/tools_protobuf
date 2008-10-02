@@ -15,8 +15,19 @@ fi
 
 set -ex
 
-# TODO(kenton):  Remove the ",no-obsolete" part and fix the resulting warnings.
-autoreconf -f -i -Wall,no-obsolete
+rm -rf autom4te.cache
+
+# gDapper has 1.4 and 1.9  gHardy has 1.10
+if [ -f /usr/bin/aclocal-1.9 ]; then VERSION=1.9
+elif [ -f //usr/bin/aclocal-1.10 ]; then VERSION=1.10
+else echo "Install automake and autoconf to continue"; exit 1
+fi
+
+aclocal-${VERSION} --force -I m4
+libtoolize -c -f
+autoheader -f -W all
+automake-${VERSION} --foreign -a -c -f -W all
+autoconf -f -W all,no-obsolete
 
 rm -rf autom4te.cache config.h.in~
 exit 0
